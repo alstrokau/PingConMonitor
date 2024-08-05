@@ -1,9 +1,12 @@
 ﻿using System.Net.NetworkInformation;
 using PingConMonitor.DataStructures;
 
-Console.WriteLine("Hello, Ping!\nv0.0");
-
 const string Address = "8.8.8.8";
+
+Console.BackgroundColor = ConsoleColor.Black;
+Console.ForegroundColor = ConsoleColor.Gray;
+Console.Clear();
+Console.WriteLine("Hello, Ping!\nv0.0");
 
 Ping ping = new();
 List<PingPoint> points = [];
@@ -21,7 +24,8 @@ while (!exitRequest)
     ColorizeByReplyTime(reply);
 
     Console.Write($"{reply.Status}: {reply.RoundtripTime}\t");
-    lastTimes.ShowAll();
+    lastTimes.ShowAll(shortView: Console.WindowWidth <= 100);
+
     Console.WriteLine();
 
     if (Console.KeyAvailable)

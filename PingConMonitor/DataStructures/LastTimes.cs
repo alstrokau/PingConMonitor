@@ -42,11 +42,11 @@
             };
         }
 
-        public void ShowAll()
+        public void ShowAll(bool shortView = false)
         {
             double totalSeconds;
 
-            foreach (var key in lastTimes.Keys)
+            foreach (var key in shortView ? lastTimes.Keys.Where((key, index) => index % 2 == 0 ) : lastTimes.Keys)
             {
                 totalSeconds = (DateTime.Now - lastTimes[key]).TotalSeconds;
 
