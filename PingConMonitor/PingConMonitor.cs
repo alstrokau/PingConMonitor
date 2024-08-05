@@ -9,8 +9,10 @@ Ping ping = new();
 List<PingPoint> points = [];
 LastTimes lastTimes = new();
 Console.CursorVisible = false;
+bool exitRequest = false;
+int sleepDuration = 500;
 
-while (!Console.KeyAvailable)
+while (!exitRequest)
 {
     PingReply reply = ping.Send(Address);
     points.Add(new PingPoint(reply.RoundtripTime));
@@ -20,8 +22,32 @@ while (!Console.KeyAvailable)
 
     Console.Write($"{reply.Status}: {reply.RoundtripTime}\t");
     lastTimes.ShowAll();
-    Thread.Sleep(500);
     Console.WriteLine();
+
+    if (Console.KeyAvailable)
+    {
+        ConsoleKeyInfo key = Console.ReadKey();
+        Console.ForegroundColor = ConsoleColor.Blue;
+
+        if (key.KeyChar == 'q')
+        {
+            exitRequest = true;
+        }
+
+        if (key.Key == ConsoleKey.UpArrow)
+        {
+            sleepDuration += sleepDuration < 100 ? 25 : 100;
+            Console.WriteLine($"SleepDuration: {sleepDuration}");
+        }
+        else if (key.Key == ConsoleKey.DownArrow)
+        {
+            sleepDuration -= sleepDuration > 100 ? 100 : 25;
+            sleepDuration = Math.Max(sleepDuration, 25);
+            Console.WriteLine($"SleepDuration: {sleepDuration}");
+        }
+    }
+
+    Thread.Sleep(sleepDuration);
 }
 
 static void ColorizeByReplyTime(PingReply reply)
