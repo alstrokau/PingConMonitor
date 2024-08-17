@@ -6,7 +6,7 @@ const string Address = "8.8.8.8";
 Console.BackgroundColor = ConsoleColor.Black;
 Console.ForegroundColor = ConsoleColor.Gray;
 Console.Clear();
-Console.WriteLine("PingConMonitor!\nv0.1");
+Console.WriteLine("PingConMonitor!\nv0.2");
 
 Ping ping = new();
 List<PingPoint> points = [];
