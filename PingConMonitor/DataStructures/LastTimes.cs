@@ -10,16 +10,19 @@
             if (duration == 0)
             {
                 lastTimes[0] = DateTime.Now;
+                lastTimes.Keys.ToList().ForEach(k => lastTimes[k] = DateTime.Now);
             }
-
-            foreach (var key in lastTimes.Keys)
+            else
             {
-                if (key == 0)
-                    continue;
-
-                if (duration >= key)
+                foreach (var key in lastTimes.Keys)
                 {
-                    lastTimes[key] = DateTime.Now;
+                    if (key == 0)
+                        continue;
+
+                    if (duration >= key)
+                    {
+                        lastTimes[key] = DateTime.Now;
+                    }
                 }
             }
         }
@@ -46,7 +49,7 @@
         {
             double totalSeconds;
 
-            foreach (var key in shortView ? lastTimes.Keys.Where((key, index) => index % 2 == 0 ) : lastTimes.Keys)
+            foreach (var key in shortView ? lastTimes.Keys.Where((key, index) => index % 2 == 0) : lastTimes.Keys)
             {
                 totalSeconds = (DateTime.Now - lastTimes[key]).TotalSeconds;
 
@@ -61,16 +64,16 @@
 
                 Console.Write($"{key}:{SplitTime(totalSeconds)} | ");
             }
-
         }
 
-        private string SplitTime(double timeSpan) =>
-            timeSpan switch
-            {
-                < 60 => Math.Round(timeSpan) + "s",
-                < 3600 => Math.Round(timeSpan / 60) + "+ m",
-                < 86400 => Math.Round(timeSpan / 3600) + "+ h",
-                _ => Math.Round(timeSpan / 86400) + "+ d"
-            };
+        private static string SplitTime(double timeSpan) =>
+             timeSpan switch
+             {
+                 < 60 => $"{Math.Round(timeSpan):00}s ",
+                 < 3600 => $"{Math.Round(timeSpan / 60):00}+m",
+                 < 86400 => $"{Math.Round(timeSpan / 3600):00}+h",
+                 _ => $"{Math.Round(timeSpan / 86400):00}+d"
+             };
+
     }
 }

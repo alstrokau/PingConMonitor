@@ -6,7 +6,7 @@ const string Address = "8.8.8.8";
 Console.BackgroundColor = ConsoleColor.Black;
 Console.ForegroundColor = ConsoleColor.Gray;
 Console.Clear();
-Console.WriteLine("Hello, Ping!\nv0.0");
+Console.WriteLine("PingConMonitor!\nv0.1");
 
 Ping ping = new();
 List<PingPoint> points = [];
@@ -14,6 +14,8 @@ LastTimes lastTimes = new();
 Console.CursorVisible = false;
 bool exitRequest = false;
 int sleepDuration = 500;
+int timeoutsCount = 0;
+DateTime startTime = DateTime.Now;
 
 while (!exitRequest)
 {
@@ -24,10 +26,40 @@ while (!exitRequest)
     ColorizeByReplyTime(reply);
 
     Console.Write($"{reply.Status}: {reply.RoundtripTime}\t");
+    if (reply.Status == IPStatus.TimedOut)
+    {
+        Console.WriteLine($"\nTimeout counts: {++timeoutsCount} in {DateTime.Now - startTime}");
+    }
+
     lastTimes.ShowAll(shortView: Console.WindowWidth <= 100);
 
     Console.WriteLine();
 
+    ProcessKeys(ref exitRequest, ref sleepDuration);
+
+    Thread.Sleep(sleepDuration);
+}
+
+static void ColorizeByReplyTime(PingReply reply)
+{
+    Console.ForegroundColor = reply.RoundtripTime switch
+    {
+        > 1500 => ConsoleColor.Red,
+        > 250 => ConsoleColor.Yellow,
+        > 100 => ConsoleColor.Green,
+        0 => ConsoleColor.Black,
+        _ => ConsoleColor.DarkGreen,
+    };
+
+    Console.BackgroundColor = reply.Status switch
+    {
+        IPStatus.TimedOut => ConsoleColor.Red,
+        _ => ConsoleColor.Black,
+    };
+}
+
+static void ProcessKeys(ref bool exitRequest, ref int sleepDuration)
+{
     if (Console.KeyAvailable)
     {
         ConsoleKeyInfo key = Console.ReadKey();
@@ -50,23 +82,4 @@ while (!exitRequest)
             Console.WriteLine($"SleepDuration: {sleepDuration}");
         }
     }
-
-    Thread.Sleep(sleepDuration);
-}
-
-static void ColorizeByReplyTime(PingReply reply)
-{
-    Console.ForegroundColor = reply.RoundtripTime switch
-    {
-        > 1500 => ConsoleColor.Red,
-        > 250 => ConsoleColor.Yellow,
-        > 100 => ConsoleColor.Green,
-        _ => ConsoleColor.DarkGreen,
-    };
-
-    Console.BackgroundColor = reply.Status switch
-    {
-        IPStatus.TimedOut => ConsoleColor.DarkGray,
-        _ => ConsoleColor.Black,
-    };
 }
